@@ -144,7 +144,9 @@ document.getElementById("play").addEventListener("click", () => {
 });
 
 document.getElementById("stop").addEventListener("click", () => {
-  oscillator.stop();
-  oscillator = null;
-  select("#soundCheck").html("OFF");
+  if (oscillator) {
+    oscillator.stop();
+    oscillator = null;
+    select("#soundCheck").html("OFF");
+  }
 });
