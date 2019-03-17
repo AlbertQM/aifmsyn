@@ -59,12 +59,10 @@ function startPitch() {
 function getPitch() {
   pitch.getPitch((err, frequency) => {
     if (frequency && oscillator) {
-      select("#result").html(frequency);
+      select("#result").html(Math.floor(frequency));
       changeOscillatorFrequency(frequency);
       changeModulatorFrequency(noseX);
       changeWaveType(noseY);
-    } else {
-      select("#result").html("No pitch detected");
     }
     // Draw updated live feed on canvas
     image(video, 0, 0, width, height);
@@ -80,28 +78,38 @@ function changeOscillatorFrequency(newFrequency) {
 function changeModulatorFrequency(xCoord) {
   const newFrequency = map(xCoord, 0, 640, 1, 20);
   modulator.frequency.value = newFrequency;
+  select("#modulatorFrequency").html(Math.floor(newFrequency));
 }
 
 function changeWaveType(yCoord) {
   const offset = height / 4;
   if (yCoord < offset) {
     modulator.type = "square";
+    select("#modulatorWave").html("square");
   }
   if (yCoord > offset && yCoord < offset * 2) {
     modulator.type = "triangle";
+    select("#modulatorWave").html("triangle");
   }
   if (yCoord > offset * 2 && yCoord < offset * 3) {
     modulator.type = "sawtooth";
+    select("#modulatorWave").html("sawtooth");
   }
   if (yCoord > offset * 3 && yCoord < offset * 4) {
     modulator.type = "sine";
+    select("#modulatorWave").html("sine");
   }
 }
 
 document.getElementById("play").addEventListener("click", () => {
+  // Prevent the creation of additional oscillators each time a user presses play
   if (oscillator) {
     oscillator.stop();
   }
+
+  select("#soundCheck").html("ON");
+
+  // FM Synthesis with one modulator and one carrier
   oscillator = audioCtx.createOscillator();
   modulator = audioCtx.createOscillator();
   modulatorGain = audioCtx.createGain();
@@ -123,4 +131,5 @@ document.getElementById("play").addEventListener("click", () => {
 document.getElementById("stop").addEventListener("click", () => {
   oscillator.stop();
   oscillator = null;
+  select("#soundCheck").html("OFF");
 });
