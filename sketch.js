@@ -9,6 +9,7 @@ let modulator;
 // Used by pitchDetection model
 let mic;
 let pitch;
+let isListening = false;
 
 // Used by poseNet model
 let video;
@@ -45,6 +46,20 @@ function setup() {
   audioContext = getAudioContext();
   mic = new p5.AudioIn();
   mic.start(startPitch);
+
+  $("#listen").on("mousedown", () => {
+    isListening = true;
+    getPitch();
+  });
+
+  $("#listen").on("mouseup", () => {
+    isListening = false;
+  });
+}
+
+function draw() {
+  // Draw updated live feed on canvas
+  image(video, 0, 0, width, height);
 }
 
 function startPitch() {
@@ -57,18 +72,18 @@ function startPitch() {
 }
 
 function getPitch() {
-  pitch.getPitch((err, frequency) => {
-    if (frequency && oscillator) {
-      select("#result").html(Math.floor(frequency));
-      changeOscillatorFrequency(frequency);
-      changeModulatorFrequency(noseX);
-      changeWaveType(noseY);
-    }
-    // Draw updated live feed on canvas
-    image(video, 0, 0, width, height);
-    // Recursively get pitch
-    getPitch();
-  });
+  if (isListening) {
+    pitch.getPitch((err, frequency) => {
+      if (frequency && oscillator) {
+        select("#result").html(Math.floor(frequency));
+        changeOscillatorFrequency(frequency);
+        changeModulatorFrequency(noseX);
+        changeWaveType(noseY);
+      }
+      // Recursively get pitch
+      getPitch();
+    });
+  }
 }
 
 function changeOscillatorFrequency(newFrequency) {
