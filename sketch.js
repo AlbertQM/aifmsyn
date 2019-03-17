@@ -91,9 +91,11 @@ function changeOscillatorFrequency(newFrequency) {
 }
 
 function changeModulatorFrequency(xCoord) {
-  const newFrequency = map(xCoord, 0, 640, 1, 20);
+  const minFrequency = $("#minFrequency")[0].value;
+  const maxFrequency = $("#maxFrequency")[0].value;
+  const newFrequency = map(xCoord, 0, 640, minFrequency, maxFrequency);
   modulator.frequency.value = newFrequency;
-  select("#modulatorFrequency").html(Math.floor(newFrequency));
+  select("#modulatorFrequency").html(nf(Math.abs(newFrequency), 0, 2));
 }
 
 function changeWaveType(yCoord) {

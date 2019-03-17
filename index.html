@@ -65,6 +65,7 @@
           </div>
         </div>
         <div class="col-lg-9">
+          <p class="h5">Data</p>
           <table
             class="table table-striped table-dark table-sm"
             style="table-layout: fixed"
@@ -88,9 +89,54 @@
               </tr>
             </tbody>
           </table>
+          <p class="h5">Settings</p>
+          <table class="table table-striped  table-dark table-sm">
+            <tr>
+              <th scope="row">Minimum Modulator Frequency</th>
+              <td>
+                <input
+                  type="number"
+                  class="form-control form-control-sm"
+                  value="1"
+                  id="minFrequency"
+                />
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Maximum Modulator Frequency</th>
+              <td>
+                <input
+                  type="number"
+                  class="form-control form-control-sm"
+                  value="20"
+                  id="maxFrequency"
+                />
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
     </div>
     <script src="sketch.js"></script>
+    <script>
+      // Sanitizing inputs
+      $("#minFrequency").on("change", e => {
+        let value = e.target.value;
+        if (value > 0 && value < 20000) {
+          e.target.value = value;
+        } else {
+          e.target.value = 1;
+        }
+      });
+
+      $("#maxFrequency").on("change", e => {
+        let value = e.target.value;
+        if (value > 0 && value < 20000) {
+          e.target.value = value;
+        } else {
+          e.target.value = 20;
+        }
+      });
+    </script>
   </body>
 </html>
