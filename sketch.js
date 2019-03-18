@@ -118,6 +118,10 @@ function changeWaveType(yCoord) {
   }
 }
 
+document.getElementById("oscillatorWave").addEventListener("change", e => {
+  oscillator.type = e.target.value;
+});
+
 document.getElementById("play").addEventListener("click", () => {
   // Prevent the creation of additional oscillators each time a user presses play
   if (oscillator) {
@@ -127,6 +131,7 @@ document.getElementById("play").addEventListener("click", () => {
   select("#soundCheck").html("ON");
   // Re-use parameters rather than start from default every time a user presses
   // stop and play
+  const oscillatorWave = select("#oscillatorWave").value();
   const modulatorWave = select("#modulatorWave")
     .html()
     .toLowerCase();
@@ -137,7 +142,7 @@ document.getElementById("play").addEventListener("click", () => {
   modulator = audioCtx.createOscillator();
   modulatorGain = audioCtx.createGain();
 
-  oscillator.type = "sine";
+  oscillator.type = oscillatorWave;
   oscillator.frequency.value = result;
   modulator.type = modulatorWave;
 
