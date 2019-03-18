@@ -102,19 +102,19 @@ function changeWaveType(yCoord) {
   const offset = height / 4;
   if (yCoord < offset) {
     modulator.type = "square";
-    select("#modulatorWave").html("square");
+    select("#modulatorWave").html("Square");
   }
   if (yCoord > offset && yCoord < offset * 2) {
     modulator.type = "triangle";
-    select("#modulatorWave").html("triangle");
+    select("#modulatorWave").html("Triangle");
   }
   if (yCoord > offset * 2 && yCoord < offset * 3) {
     modulator.type = "sawtooth";
-    select("#modulatorWave").html("sawtooth");
+    select("#modulatorWave").html("Sawtooth");
   }
   if (yCoord > offset * 3 && yCoord < offset * 4) {
     modulator.type = "sine";
-    select("#modulatorWave").html("sine");
+    select("#modulatorWave").html("Sine");
   }
 }
 
@@ -125,17 +125,24 @@ document.getElementById("play").addEventListener("click", () => {
   }
 
   select("#soundCheck").html("ON");
-
+  // Re-use parameters rather than start from default every time a user presses
+  // stop and play
+  const modulatorWave = select("#modulatorWave")
+    .html()
+    .toLowerCase();
+  const modulatorFrequency = select("#modulatorFrequency").html();
+  const result = select("#result").html();
   // FM Synthesis with one modulator and one carrier
   oscillator = audioCtx.createOscillator();
   modulator = audioCtx.createOscillator();
   modulatorGain = audioCtx.createGain();
 
   oscillator.type = "sine";
-  modulator.type = "triangle";
+  oscillator.frequency.value = result;
+  modulator.type = modulatorWave;
 
   modulatorGain.gain.value = 200;
-  modulator.frequency.value = 1;
+  modulator.frequency.value = modulatorFrequency;
 
   modulator.connect(modulatorGain);
   modulatorGain.connect(oscillator.detune);
