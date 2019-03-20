@@ -118,6 +118,29 @@ function changeWaveType(yCoord) {
   }
 }
 
+function getOscillatorsData() {
+  // Re-use parameters rather than start from default every time a user presses
+  // stop and play
+  const oscillatorWave = select("#oscillatorWave").value();
+  const modulatorWave = select("#modulatorWave")
+    .html()
+    .toLowerCase();
+  const modulatorFrequency = select("#modulatorFrequency").html();
+  const result = select("#result").html();
+  const sustainTime = select("#sustainTime").value();
+  const attackTime = select("#attack").value();
+  const releaseTime = select("#release").value();
+
+  return {
+    oscillatorWave: oscillatorWave,
+    modulatorWave: modulatorWave,
+    modulatorFrequency: modulatorFrequency,
+    result: result,
+    attackTime: attackTime,
+    releaseTime: releaseTime,
+    sustainTime: sustainTime
+  };
+}
 document.getElementById("oscillatorWave").addEventListener("change", e => {
   oscillator.type = e.target.value;
 });
@@ -127,27 +150,20 @@ document.getElementById("play").addEventListener("click", () => {
   if (oscillator) {
     oscillator.stop();
   }
-
   select("#soundCheck").html("ON");
-  // Re-use parameters rather than start from default every time a user presses
-  // stop and play
-  const oscillatorWave = select("#oscillatorWave").value();
-  const modulatorWave = select("#modulatorWave")
-    .html()
-    .toLowerCase();
-  const modulatorFrequency = select("#modulatorFrequency").html();
-  const result = select("#result").html();
+
+  const data = getOscillatorsData();
   // FM Synthesis with one modulator and one carrier
   oscillator = audioCtx.createOscillator();
   modulator = audioCtx.createOscillator();
   modulatorGain = audioCtx.createGain();
 
-  oscillator.type = oscillatorWave;
-  oscillator.frequency.value = result;
-  modulator.type = modulatorWave;
+  oscillator.type = data.oscillatorWave;
+  oscillator.frequency.value = data.result;
+  modulator.type = data.modulatorWave;
 
   modulatorGain.gain.value = 200;
-  modulator.frequency.value = modulatorFrequency;
+  modulator.frequency.value = data.modulatorFrequency;
 
   modulator.connect(modulatorGain);
   modulatorGain.connect(oscillator.detune);
