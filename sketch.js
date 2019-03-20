@@ -6,6 +6,10 @@ const audioCtx = new AudioContext();
 let oscillator;
 let modulator;
 
+let attackTime;
+let releaseTime;
+let sustainTime;
+
 // Used by pitchDetection model
 let mic;
 let pitch;
@@ -118,6 +122,71 @@ function changeWaveType(yCoord) {
   }
 }
 
+function getOscillatorsData() {
+  // Re-use parameters rather than start from default every time a user presses
+  // stop and play
+  const oscillatorWave = select("#oscillatorWave").value();
+  const modulatorWave = select("#modulatorWave")
+    .html()
+    .toLowerCase();
+  const modulatorFrequency = select("#modulatorFrequency").html();
+  const result = select("#result").html();
+  const sustainTime = select("#sustainTime").value();
+  const attackTime = select("#attack").value();
+  const releaseTime = select("#release").value();
+
+  return {
+    oscillatorWave: oscillatorWave,
+    modulatorWave: modulatorWave,
+    modulatorFrequency: modulatorFrequency,
+    result: result,
+    attackTime: attackTime,
+    releaseTime: releaseTime,
+    sustainTime: sustainTime
+  };
+}
+
+document.getElementById("playEnvelope").addEventListener("click", () => {
+  // Prevent the creation of additional oscillators each time a user presses play
+  if (oscillator) {
+    oscillator.stop();
+  }
+
+  // Create the oscillators and update values based on current data
+  const data = getOscillatorsData();
+  oscillator = audioCtx.createOscillator();
+  modulator = audioCtx.createOscillator();
+  modulatorGain = audioCtx.createGain();
+  oscillator.type = data.oscillatorWave;
+  oscillator.frequency.value = data.result;
+  modulator.type = data.modulatorWave;
+  modulatorGain.gain.value = 200;
+  modulator.frequency.value = data.modulatorFrequency;
+  sustainTime = Number(data.sustainTime);
+  attackTime = Number(data.attackTime);
+  releaseTime = Number(data.releaseTime);
+
+  // Create a linear envelope based on the users settings
+  let envelope = audioCtx.createGain();
+  envelope.gain.cancelScheduledValues(audioCtx.currentTime);
+  envelope.gain.setValueAtTime(0, audioCtx.currentTime);
+  envelope.gain.linearRampToValueAtTime(1, audioCtx.currentTime + attackTime);
+  envelope.gain.linearRampToValueAtTime(
+    0,
+    audioCtx.currentTime + sustainTime - releaseTime
+  );
+
+  modulator.connect(modulatorGain);
+  modulatorGain.connect(oscillator.detune);
+  oscillator.connect(envelope);
+  envelope.connect(audioCtx.destination);
+
+  oscillator.start();
+  modulator.start();
+  oscillator.stop(audioCtx.currentTime + sustainTime);
+  modulator.stop(audioCtx.currentTime + sustainTime);
+});
+
 document.getElementById("oscillatorWave").addEventListener("change", e => {
   oscillator.type = e.target.value;
 });
@@ -127,27 +196,20 @@ document.getElementById("play").addEventListener("click", () => {
   if (oscillator) {
     oscillator.stop();
   }
-
   select("#soundCheck").html("ON");
-  // Re-use parameters rather than start from default every time a user presses
-  // stop and play
-  const oscillatorWave = select("#oscillatorWave").value();
-  const modulatorWave = select("#modulatorWave")
-    .html()
-    .toLowerCase();
-  const modulatorFrequency = select("#modulatorFrequency").html();
-  const result = select("#result").html();
+
+  const data = getOscillatorsData();
   // FM Synthesis with one modulator and one carrier
   oscillator = audioCtx.createOscillator();
   modulator = audioCtx.createOscillator();
   modulatorGain = audioCtx.createGain();
 
-  oscillator.type = oscillatorWave;
-  oscillator.frequency.value = result;
-  modulator.type = modulatorWave;
+  oscillator.type = data.oscillatorWave;
+  oscillator.frequency.value = data.result;
+  modulator.type = data.modulatorWave;
 
   modulatorGain.gain.value = 200;
-  modulator.frequency.value = modulatorFrequency;
+  modulator.frequency.value = data.modulatorFrequency;
 
   modulator.connect(modulatorGain);
   modulatorGain.connect(oscillator.detune);
@@ -163,4 +225,16 @@ document.getElementById("stop").addEventListener("click", () => {
     oscillator = null;
     select("#soundCheck").html("OFF");
   }
+});
+
+document.getElementById("attack").addEventListener("input", e => {
+  attackTime = Number(e.target.value);
+});
+
+document.getElementById("release").addEventListener("input", e => {
+  releaseTime = Number(e.target.value);
+});
+
+document.getElementById("sustainTime").addEventListener("input", e => {
+  sustainTime = Number(e.target.value);
 });
