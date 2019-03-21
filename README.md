@@ -20,10 +20,20 @@ This project uses two different models from ML5.js and Web Audio API.
 
 **How it works**
 
-There are two oscillators. One is used to modulate the frequency of the other.
+There are three oscillators. One is used to modulate the frequency of the other to modulate the amplitude of the third one.
+
+Play (FM only):
 - The x coordinate of the nose is used to change the frequency of the modulator.
 - The y coordinate of the nose is used to change the type of the wave of the modulator (triangle, sine, sawtooth or square).
 - The pitch detection is used to change the frequency of the oscillator.
+
+Play (AM and FM):
+In addition to the above effects, this button plays the sound with amplitude modulation.
+- The x coordinate of the nose is used to change the frequency of the amplitude modulator.
+- The pitch is used to increase the modulator gain.
+And if the relative checkbox is checked
+- The y coordinate of the nose is used to change the amplitude of the carrier.
+
 
 
 ## How to
