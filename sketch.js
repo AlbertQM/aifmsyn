@@ -73,7 +73,7 @@ function startPitch() {
   pitch = ml5.pitchDetection("./model/", audioCtx, mic.stream, () => {
     console.log("Pitch model loaded.");
     // Click to create the oscillators
-    document.getElementById("playSimple").click();
+    document.getElementById("playComplex").click();
     getPitch();
   });
 }
@@ -194,7 +194,9 @@ document.getElementById("playEnvelope").addEventListener("click", () => {
 });
 
 document.getElementById("oscillatorWave").addEventListener("change", e => {
-  oscillator.type = e.target.value;
+  if (oscillator) {
+    oscillator.type = e.target.value;
+  }
 });
 
 document.getElementById("playSimple").addEventListener("click", () => {
