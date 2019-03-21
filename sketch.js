@@ -194,7 +194,9 @@ document.getElementById("playEnvelope").addEventListener("click", () => {
 });
 
 document.getElementById("oscillatorWave").addEventListener("change", e => {
-  oscillator.type = e.target.value;
+  if (oscillator) {
+    oscillator.type = e.target.value;
+  }
 });
 
 document.getElementById("playSimple").addEventListener("click", () => {
