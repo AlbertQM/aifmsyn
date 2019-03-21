@@ -86,6 +86,9 @@ function getPitch() {
         changeOscillatorFrequency(frequency);
         changeModulatorFrequency(noseX);
         changeWaveType(noseY);
+        // Normalise to values up to 30
+        changeAmplitudeModulatorFrequency((noseX / width) * 30);
+        changeOscillatorGain(noseY);
       }
       // Recursively get pitch
       getPitch();
@@ -222,6 +225,13 @@ document.getElementById("playSimple").addEventListener("click", () => {
   oscillator.start();
 });
 
+function changeAmplitudeModulatorFrequency(newFrequency) {
+  amplitudeModulator.frequency.value = newFrequency;
+}
+
+function changeOscillatorGain(newGain) {
+  oscillatorGain.gain.value = $("#oscillatorGainOn")[0].checked ? newGain : 1;
+}
 
 document.getElementById("playComplex").addEventListener("click", () => {
   // Prevent the creation of additional oscillators each time a user presses play
