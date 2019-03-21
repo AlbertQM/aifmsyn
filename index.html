@@ -164,13 +164,13 @@
               </td>
             </tr>
             <tr>
-              <th scope="row">Sustain</th>
+              <th scope="row">Note length</th>
               <td>
                 <input
                   type="number"
                   class="form-control form-control-sm"
                   value="1"
-                  id="sustainTime"
+                  id="noteLength"
                 />
               </td>
             </tr>
@@ -199,7 +199,7 @@
         }
       });
 
-      $("#sustainTime").on("change", e => {
+      $("#noteLenght").on("change", e => {
         let value = e.target.value;
         if (value > 0 && value < 60) {
           e.target.value = value;

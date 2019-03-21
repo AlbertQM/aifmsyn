@@ -8,7 +8,7 @@ let modulator;
 
 let attackTime;
 let releaseTime;
-let sustainTime;
+let noteLength;
 
 // Used by pitchDetection model
 let mic;
@@ -131,7 +131,7 @@ function getOscillatorsData() {
     .toLowerCase();
   const modulatorFrequency = select("#modulatorFrequency").html();
   const result = select("#result").html();
-  const sustainTime = select("#sustainTime").value();
+  const noteLength = select("#noteLength").value();
   const attackTime = select("#attack").value();
   const releaseTime = select("#release").value();
 
@@ -142,7 +142,7 @@ function getOscillatorsData() {
     result: result,
     attackTime: attackTime,
     releaseTime: releaseTime,
-    sustainTime: sustainTime
+    noteLength: noteLength
   };
 }
 
@@ -162,7 +162,7 @@ document.getElementById("playEnvelope").addEventListener("click", () => {
   modulator.type = data.modulatorWave;
   modulatorGain.gain.value = 200;
   modulator.frequency.value = data.modulatorFrequency;
-  sustainTime = Number(data.sustainTime);
+  noteLength = Number(data.noteLength);
   attackTime = Number(data.attackTime);
   releaseTime = Number(data.releaseTime);
 
@@ -173,7 +173,7 @@ document.getElementById("playEnvelope").addEventListener("click", () => {
   envelope.gain.linearRampToValueAtTime(1, audioCtx.currentTime + attackTime);
   envelope.gain.linearRampToValueAtTime(
     0,
-    audioCtx.currentTime + sustainTime - releaseTime
+    audioCtx.currentTime + noteLength + releaseTime
   );
 
   modulator.connect(modulatorGain);
@@ -183,8 +183,8 @@ document.getElementById("playEnvelope").addEventListener("click", () => {
 
   oscillator.start();
   modulator.start();
-  oscillator.stop(audioCtx.currentTime + sustainTime);
-  modulator.stop(audioCtx.currentTime + sustainTime);
+  oscillator.stop(audioCtx.currentTime + noteLength + releaseTime);
+  modulator.stop(audioCtx.currentTime + noteLength + releaseTime);
 });
 
 document.getElementById("oscillatorWave").addEventListener("change", e => {
@@ -235,6 +235,6 @@ document.getElementById("release").addEventListener("input", e => {
   releaseTime = Number(e.target.value);
 });
 
-document.getElementById("sustainTime").addEventListener("input", e => {
-  sustainTime = Number(e.target.value);
+document.getElementById("noteLength").addEventListener("input", e => {
+  noteLength = Number(e.target.value);
 });
