@@ -4,7 +4,10 @@ const audioCtx = new AudioContext();
 
 // Audio sources for FM synthesis
 let oscillator;
+let oscillatorGain;
 let modulator;
+let modulatorGain;
+let amplitudeModulator;
 
 let attackTime;
 let releaseTime;
@@ -70,7 +73,7 @@ function startPitch() {
   pitch = ml5.pitchDetection("./model/", audioCtx, mic.stream, () => {
     console.log("Pitch model loaded.");
     // Click to create the oscillators
-    document.getElementById("play").click();
+    document.getElementById("playSimple").click();
     getPitch();
   });
 }
@@ -191,12 +194,12 @@ document.getElementById("oscillatorWave").addEventListener("change", e => {
   oscillator.type = e.target.value;
 });
 
-document.getElementById("play").addEventListener("click", () => {
+document.getElementById("playSimple").addEventListener("click", () => {
   // Prevent the creation of additional oscillators each time a user presses play
   if (oscillator) {
     oscillator.stop();
   }
-  select("#soundCheck").html("ON");
+  select("#soundCheck").html("ON (FM)");
 
   const data = getOscillatorsData();
   // FM Synthesis with one modulator and one carrier
@@ -217,6 +220,44 @@ document.getElementById("play").addEventListener("click", () => {
 
   modulator.start();
   oscillator.start();
+});
+
+
+document.getElementById("playComplex").addEventListener("click", () => {
+  // Prevent the creation of additional oscillators each time a user presses play
+  if (oscillator) {
+    oscillator.stop();
+  }
+  select("#soundCheck").html("ON (AM & FM)");
+
+  const data = getOscillatorsData();
+  // FM Synthesis with one modulator and one carrier
+  oscillator = audioCtx.createOscillator();
+  modulator = audioCtx.createOscillator();
+  amplitudeModulator = audioCtx.createOscillator();
+  modulatorGain = audioCtx.createGain();
+  oscillatorGain = audioCtx.createGain();
+
+  oscillator.type = data.oscillatorWave;
+  oscillator.frequency.value = data.result;
+  modulator.type = data.modulatorWave;
+
+  // The higher the result frequency, the higher the modulator gain,
+  // resulting in more complex sounds
+  modulatorGain.gain.value = 2 * data.result;
+  modulator.frequency.value = data.modulatorFrequency;
+
+  amplitudeModulator.frequency.value = 1;
+  oscillatorGain.gain.value = 1;
+
+  modulator.connect(modulatorGain);
+  modulatorGain.connect(oscillator.detune);
+  oscillator.connect(oscillatorGain);
+  amplitudeModulator.connect(oscillatorGain.gain);
+  oscillatorGain.connect(audioCtx.destination);
+  modulator.start();
+  oscillator.start();
+  amplitudeModulator.start();
 });
 
 document.getElementById("stop").addEventListener("click", () => {
