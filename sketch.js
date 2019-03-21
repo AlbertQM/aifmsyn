@@ -73,7 +73,7 @@ function startPitch() {
   pitch = ml5.pitchDetection("./model/", audioCtx, mic.stream, () => {
     console.log("Pitch model loaded.");
     // Click to create the oscillators
-    document.getElementById("playSimple").click();
+    document.getElementById("playComplex").click();
     getPitch();
   });
 }
