@@ -23,13 +23,15 @@ let video;
 let poseNet;
 let noseX = 0;
 let noseY = 0;
+let videoWidth = 300;
+let videoHeight = 200;
 
 function setup() {
   // Show webcam feed inside canvas
-  let canvas = createCanvas(640, 480);
+  let canvas = createCanvas(videoWidth, videoHeight);
   canvas.parent("canvasContainer");
   video = createCapture(VIDEO);
-  video.size(width, height);
+  video.size(videoWidth, videoHeight);
   // Hide actual video
   video.hide();
 
@@ -41,8 +43,8 @@ function setup() {
     if (poses.length > 0) {
       let nX = poses[0].pose.keypoints[0].position.x;
       let nY = poses[0].pose.keypoints[0].position.y;
-      let eX = poses[0].pose.keypoints[1].position.x;
-      let eY = poses[0].pose.keypoints[1].position.y;
+      // let eX = poses[0].pose.keypoints[1].position.x;
+      // let eY = poses[0].pose.keypoints[1].position.y;
       // Linear interpolation
       noseX = lerp(noseX, nX, 0.5);
       noseY = lerp(noseY, nY, 0.5);
@@ -66,7 +68,7 @@ function setup() {
 
 function draw() {
   // Draw updated live feed on canvas
-  image(video, 0, 0, width, height);
+  image(video, 0, 0, videoWidth, videoHeight);
 }
 
 function startPitch() {
@@ -87,7 +89,7 @@ function getPitch() {
         changeModulatorFrequency(noseX);
         changeWaveType(noseY);
         // Normalise to values up to 30
-        changeAmplitudeModulatorFrequency((noseX / width) * 30);
+        changeAmplitudeModulatorFrequency((noseX / videoWidth) * 30);
         changeOscillatorGain(noseY);
       }
       // Recursively get pitch
@@ -103,13 +105,13 @@ function changeOscillatorFrequency(newFrequency) {
 function changeModulatorFrequency(xCoord) {
   const minFrequency = $("#minFrequency")[0].value;
   const maxFrequency = $("#maxFrequency")[0].value;
-  const newFrequency = map(xCoord, 0, 640, minFrequency, maxFrequency);
+  const newFrequency = map(xCoord, 0, videoWidth, minFrequency, maxFrequency);
   modulator.frequency.value = newFrequency;
   select("#modulatorFrequency").html(nf(Math.abs(newFrequency), 0, 2));
 }
 
 function changeWaveType(yCoord) {
-  const offset = height / 4;
+  const offset = videoHeight / 4;
   if (yCoord < offset) {
     modulator.type = "square";
     select("#modulatorWave").html("Square");
