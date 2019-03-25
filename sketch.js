@@ -43,8 +43,6 @@ function setup() {
     if (poses.length > 0) {
       let nX = poses[0].pose.keypoints[0].position.x;
       let nY = poses[0].pose.keypoints[0].position.y;
-      // let eX = poses[0].pose.keypoints[1].position.x;
-      // let eY = poses[0].pose.keypoints[1].position.y;
       // Linear interpolation
       noseX = lerp(noseX, nX, 0.5);
       noseY = lerp(noseY, nY, 0.5);
@@ -58,11 +56,13 @@ function setup() {
 
   $("#listen").on("mousedown", () => {
     isListening = true;
+    select("#soundCheck").html("Listening");
     getPitch();
   });
 
   $("#listen").on("mouseup", () => {
     isListening = false;
+    select("#soundCheck").html("ON");
   });
 }
 
