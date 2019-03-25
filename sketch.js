@@ -8,6 +8,7 @@ let oscillatorGain;
 let modulator;
 let modulatorGain;
 let amplitudeModulator;
+let biquadFilter;
 
 let attackTime;
 let releaseTime;
@@ -65,6 +66,8 @@ function setup() {
     isListening = false;
     if ($("#soundCheck").html() !== "OFF") select("#soundCheck").html("ON");
   });
+
+  createFilter();
 }
 
 function draw() {
@@ -165,11 +168,39 @@ function getOscillatorsData() {
   };
 }
 
+function getFilterValues() {
+  const filterFrequency = $("#filterFrequency").val();
+  const filterQ = $("#filterQ").val();
+  const filterGain = $("#filterGain").val();
+  const filterDetune = $("#filterDetune").val();
+  const filterType = $("#filterType").val();
+
+  return {
+    filterFrequency: filterFrequency,
+    filterQ: filterQ,
+    filterGain: filterGain,
+    filterDetune: filterDetune,
+    filterType: filterType
+  };
+}
+
+function createFilter() {
+  const data = getFilterValues();
+  biquadFilter = audioCtx.createBiquadFilter();
+  biquadFilter.frequency = data.filterFrequency;
+  biquadFilter.detune = data.filterDetune;
+  biquadFilter.Q = data.filterQ;
+  biquadFilter.gain = data.filterGain;
+  biquadFilter.type = data.filterType;
+}
+
 document.getElementById("playEnvelope").addEventListener("click", () => {
   // Prevent the creation of additional oscillators each time a user presses play
   if (oscillator) {
     oscillator.stop();
   }
+
+  select("#soundCheck").html("ON");
 
   // Create the oscillators and update values based on current data
   const data = getOscillatorsData();
@@ -197,8 +228,13 @@ document.getElementById("playEnvelope").addEventListener("click", () => {
 
   modulator.connect(modulatorGain);
   modulatorGain.connect(oscillator.detune);
-  oscillator.connect(envelope);
-  envelope.connect(audioCtx.destination);
+  if ($("#filterOn")[0].checked) {
+    oscillator.connect(biquadFilter);
+    biquadFilter.connect(audioCtx.destination);
+  } else {
+    oscillator.connect(envelope);
+    envelope.connect(audioCtx.destination);
+  }
 
   oscillator.start();
   modulator.start();
@@ -242,7 +278,12 @@ document.getElementById("playSimple").addEventListener("click", () => {
 
   modulator.connect(modulatorGain);
   modulatorGain.connect(oscillator.detune);
-  oscillator.connect(audioCtx.destination);
+  if ($("#filterOn")[0].checked) {
+    oscillator.connect(biquadFilter);
+    biquadFilter.connect(audioCtx.destination);
+  } else {
+    oscillator.connect(audioCtx.destination);
+  }
 
   modulator.start();
   oscillator.start();
@@ -278,9 +319,15 @@ document.getElementById("playComplex").addEventListener("click", () => {
 
   modulator.connect(modulatorGain);
   modulatorGain.connect(oscillator.detune);
-  oscillator.connect(oscillatorGain);
+  if ($("#filterOn")[0].checked) {
+    oscillator.connect(biquadFilter);
+    biquadFilter.connect(oscillatorGain);
+  } else {
+    oscillator.connect(oscillatorGain);
+  }
   amplitudeModulator.connect(oscillatorGain.gain);
   oscillatorGain.connect(audioCtx.destination);
+
   modulator.start();
   oscillator.start();
   amplitudeModulator.start();
@@ -304,4 +351,45 @@ document.getElementById("release").addEventListener("input", e => {
 
 document.getElementById("noteLength").addEventListener("input", e => {
   noteLength = Number(e.target.value);
+});
+
+document.getElementById("filterQ").addEventListener("change", e => {
+  biquadFilter.Q = Number(e.target.value);
+});
+
+document.getElementById("filterFrequency").addEventListener("change", e => {
+  biquadFilter.frequency = Number(e.target.value);
+});
+
+document.getElementById("filterDetune").addEventListener("change", e => {
+  biquadFilter.filterDetune = Number(e.target.value);
+});
+
+document.getElementById("filterGain").addEventListener("change", e => {
+  biquadFilter.gain = Number(e.target.value);
+});
+
+document.getElementById("filterType").addEventListener("change", e => {
+  biquadFilter.type = e.target.value;
+});
+
+document.getElementById("filterOn").addEventListener("change", e => {
+  switch ($("#soundCheck").html()) {
+    case "ON":
+      $("#playSimple").click();
+      console.log("1");
+      break;
+    case "ON (FM)":
+      $("#playSimple").click();
+      console.log("2");
+
+      break;
+    case "ON (AM &amp; FM)":
+      $("#playComplex").click();
+      console.log("3");
+
+      break;
+    default:
+      break;
+  }
 });

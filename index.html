@@ -165,6 +165,83 @@
             </tr>
           </table>
 
+          <p class="h5">Biquad Filter</p>
+          <table class="table table-striped  table-dark table-sm">
+            <tr>
+              <th scope="row">Enable Biquad Filter</th>
+              <td>
+                <input
+                  type="checkbox"
+                  class="form-control form-control-sm"
+                  id="filterOn"
+                />
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Biquad Filter Type</th>
+              <td>
+                <select
+                  class="form-control form-control-sm"
+                  value="sine"
+                  id="filterType"
+                >
+                  <option value="lowpass">Low-pass</option>
+                  <option value="highpass">High-pass</option>
+                  <option value="bandpass">Band-pass</option>
+                  <option value="lowshelf">Low-shelf</option>
+                  <option value="highshelf">High-shelf</option>
+                  <option value="peaking">Peaking</option>
+                  <option value="notch">Notch</option>
+                  <option value="allpass">All-pass</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Biquad Filter Frequency</th>
+              <td>
+                <input
+                  type="number"
+                  class="form-control form-control-sm"
+                  value="440"
+                  id="filterFrequency"
+                />
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Biquad Filter Gain</th>
+              <td>
+                <input
+                  type="number"
+                  class="form-control form-control-sm"
+                  value="50"
+                  id="filterGain"
+                />
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Biquad Filter Detune</th>
+              <td>
+                <input
+                  type="number"
+                  class="form-control form-control-sm"
+                  value="0"
+                  id="filterDetune"
+                />
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Biquad Filter Q</th>
+              <td>
+                <input
+                  type="number"
+                  class="form-control form-control-sm"
+                  value="1"
+                  id="filterQ"
+                />
+              </td>
+            </tr>
+          </table>
+
           <p class="h5">Envelope</p>
           <table class="table table-striped  table-dark table-sm">
             <tr>
@@ -215,7 +292,7 @@
       // Sanitizing inputs
       $("#minFrequency").on("change", e => {
         let value = e.target.value;
-        if (value > 0 && value < 20000) {
+        if (value > 0 && value <= 20000) {
           e.target.value = value;
         } else {
           e.target.value = 1;
@@ -224,7 +301,7 @@
 
       $("#maxFrequency").on("change", e => {
         let value = e.target.value;
-        if (value > 0 && value < 20000) {
+        if (value > 0 && value <= 20000) {
           e.target.value = value;
         } else {
           e.target.value = 20;
@@ -233,10 +310,46 @@
 
       $("#noteLenght").on("change", e => {
         let value = e.target.value;
-        if (value > 0 && value < 60) {
+        if (value > 0 && value <= 60) {
           e.target.value = value;
         } else {
           e.target.value = 1;
+        }
+      });
+
+      $("#filterQ").on("change", e => {
+        let value = e.target.value;
+        if (value > 0 && value <= 1000) {
+          e.target.value = value;
+        } else {
+          e.target.value = 1;
+        }
+      });
+
+      $("#filterFrequency").on("change", e => {
+        let value = e.target.value;
+        if (value > 0 && value <= 20000) {
+          e.target.value = value;
+        } else {
+          e.target.value = 1;
+        }
+      });
+
+      $("#filterGain").on("change", e => {
+        let value = e.target.value;
+        if (value > 0 && value <= 100) {
+          e.target.value = value;
+        } else {
+          e.target.value = 1;
+        }
+      });
+
+      $("#filterDetune").on("change", e => {
+        let value = e.target.value;
+        if (value >= 0 && value <= 100) {
+          e.target.value = value;
+        } else {
+          e.target.value = 0;
         }
       });
     </script>
