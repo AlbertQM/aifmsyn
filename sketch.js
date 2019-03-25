@@ -98,6 +98,14 @@ function getPitch() {
   }
 }
 
+function changeAmplitudeModulatorFrequency(newFrequency) {
+  amplitudeModulator.frequency.value = newFrequency;
+}
+
+function changeOscillatorGain(newGain) {
+  oscillatorGain.gain.value = $("#oscillatorGainOn")[0].checked ? newGain : 1;
+}
+
 function changeOscillatorFrequency(newFrequency) {
   oscillator.frequency.value = newFrequency;
 }
@@ -238,14 +246,6 @@ document.getElementById("playSimple").addEventListener("click", () => {
   modulator.start();
   oscillator.start();
 });
-
-function changeAmplitudeModulatorFrequency(newFrequency) {
-  amplitudeModulator.frequency.value = newFrequency;
-}
-
-function changeOscillatorGain(newGain) {
-  oscillatorGain.gain.value = $("#oscillatorGainOn")[0].checked ? newGain : 1;
-}
 
 document.getElementById("playComplex").addEventListener("click", () => {
   // Prevent the creation of additional oscillators each time a user presses play
