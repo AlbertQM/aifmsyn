@@ -56,13 +56,14 @@ function setup() {
 
   $("#listen").on("mousedown", () => {
     isListening = true;
-    select("#soundCheck").html("Listening");
     getPitch();
+    if ($("#soundCheck").html() !== "OFF")
+      select("#soundCheck").html("Listening");
   });
 
   $("#listen").on("mouseup", () => {
     isListening = false;
-    select("#soundCheck").html("ON");
+    if ($("#soundCheck").html() !== "OFF") select("#soundCheck").html("ON");
   });
 }
 
