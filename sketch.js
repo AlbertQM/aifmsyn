@@ -135,6 +135,7 @@ function getOscillatorsData() {
   const modulatorWave = select("#modulatorWave")
     .html()
     .toLowerCase();
+  const amplitudeModulatorWave = select("#amplitudeModulatorWave").value();
   const modulatorFrequency = select("#modulatorFrequency").html();
   const result = select("#result").html();
   const noteLength = select("#noteLength").value();
@@ -144,6 +145,7 @@ function getOscillatorsData() {
   return {
     oscillatorWave: oscillatorWave,
     modulatorWave: modulatorWave,
+    amplitudeModulatorWave: amplitudeModulatorWave,
     modulatorFrequency: modulatorFrequency,
     result: result,
     attackTime: attackTime,
@@ -199,6 +201,14 @@ document.getElementById("oscillatorWave").addEventListener("change", e => {
   }
 });
 
+document
+  .getElementById("amplitudeModulatorWave")
+  .addEventListener("change", e => {
+    if (amplitudeModulatorWave) {
+      amplitudeModulatorWave.type = e.target.value;
+    }
+  });
+
 document.getElementById("playSimple").addEventListener("click", () => {
   // Prevent the creation of additional oscillators each time a user presses play
   if (oscillator) {
@@ -253,6 +263,7 @@ document.getElementById("playComplex").addEventListener("click", () => {
   oscillator.type = data.oscillatorWave;
   oscillator.frequency.value = data.result;
   modulator.type = data.modulatorWave;
+  amplitudeModulatorWave.type = data.amplitudeModulatorWave;
 
   // The higher the result frequency, the higher the modulator gain,
   // resulting in more complex sounds
