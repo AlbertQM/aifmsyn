@@ -2,25 +2,20 @@
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioCtx = new AudioContext();
 // Audio sources for FM synthesis
-let oscillator;
-let oscillatorGain;
-let modulator;
-let modulatorGain;
+let oscillator, oscillatorGain, modulator, modulatorGain;
 // AM synthesis
 let amplitudeModulator;
 // Filter
 let biquadFilter;
+// Analyser
+let analyser, bufferLength, dataArray, canvas, canvasCtx;
 // Envelope
-let attackTime;
-let releaseTime;
-let noteLength;
+let attackTime, releaseTime, noteLength;
 // Used by pitchDetection model
-let mic;
-let pitch;
+let mic, pitch;
 let isListening = false;
 // Used by poseNet model
-let video;
-let poseNet;
+let video, poseNet;
 let noseX = 0;
 let noseY = 0;
 // Webcam feed dimensions
@@ -66,13 +61,56 @@ function setup() {
     isListening = false;
     if ($("#soundCheck").html() !== "OFF") select("#soundCheck").html("ON");
   });
-
+  setupAnalyser();
   createFilter();
 }
 
 function draw() {
   // Draw updated live feed on canvas
   image(video, 0, 0, videoWidth, videoHeight);
+  drawWave();
+}
+
+function setupAnalyser() {
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  bufferLength = analyser.frequencyBinCount;
+  dataArray = new Uint8Array(bufferLength);
+  analyser.getByteTimeDomainData(dataArray);
+  canvas = document.getElementById("analyserCanvas");
+  canvasCtx = canvas.getContext("2d");
+}
+
+function drawWave() {
+  requestAnimationFrame(drawWave);
+  analyser.getByteTimeDomainData(dataArray);
+  // Background
+  canvasCtx.fillStyle = "#F8F8F8";
+  canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+  // Signal
+  canvasCtx.lineWidth = 2;
+  canvasCtx.strokeStyle = "#000";
+
+  canvasCtx.beginPath();
+
+  let sliceWidth = (canvas.width * 1.0) / bufferLength;
+  let x = 0;
+
+  for (let i = 0; i < bufferLength; i++) {
+    let v = dataArray[i] / 128.0;
+    let y = (v * canvas.height) / 2;
+
+    if (i === 0) {
+      canvasCtx.moveTo(x, y);
+    } else {
+      canvasCtx.lineTo(x, y);
+    }
+
+    x += sliceWidth;
+  }
+
+  canvasCtx.lineTo(canvas.width, canvas.height / 2);
+  canvasCtx.stroke();
 }
 
 function startPitch() {
@@ -230,11 +268,12 @@ document.getElementById("playEnvelope").addEventListener("click", () => {
   modulatorGain.connect(oscillator.detune);
   if ($("#filterOn")[0].checked) {
     oscillator.connect(biquadFilter);
-    biquadFilter.connect(audioCtx.destination);
+    biquadFilter.connect(analyser);
   } else {
     oscillator.connect(envelope);
-    envelope.connect(audioCtx.destination);
+    envelope.connect(analyser);
   }
+  analyser.connect(audioCtx.destination);
 
   oscillator.start();
   modulator.start();
@@ -280,10 +319,11 @@ document.getElementById("playSimple").addEventListener("click", () => {
   modulatorGain.connect(oscillator.detune);
   if ($("#filterOn")[0].checked) {
     oscillator.connect(biquadFilter);
-    biquadFilter.connect(audioCtx.destination);
+    biquadFilter.connect(analyser);
   } else {
-    oscillator.connect(audioCtx.destination);
+    oscillator.connect(analyser);
   }
+  analyser.connect(audioCtx.destination);
 
   modulator.start();
   oscillator.start();
@@ -326,7 +366,8 @@ document.getElementById("playComplex").addEventListener("click", () => {
     oscillator.connect(oscillatorGain);
   }
   amplitudeModulator.connect(oscillatorGain.gain);
-  oscillatorGain.connect(audioCtx.destination);
+  oscillatorGain.connect(analyser);
+  analyser.connect(audioCtx.destination);
 
   modulator.start();
   oscillator.start();
