@@ -1,31 +1,31 @@
 // Initialise audio context
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioCtx = new AudioContext();
-
 // Audio sources for FM synthesis
 let oscillator;
 let oscillatorGain;
 let modulator;
 let modulatorGain;
+// AM synthesis
 let amplitudeModulator;
+// Filter
 let biquadFilter;
-
+// Envelope
 let attackTime;
 let releaseTime;
 let noteLength;
-
 // Used by pitchDetection model
 let mic;
 let pitch;
 let isListening = false;
-
 // Used by poseNet model
 let video;
 let poseNet;
 let noseX = 0;
 let noseY = 0;
-let videoWidth = 300;
-let videoHeight = 200;
+// Webcam feed dimensions
+const videoWidth = 300;
+const videoHeight = 200;
 
 function setup() {
   // Show webcam feed inside canvas
