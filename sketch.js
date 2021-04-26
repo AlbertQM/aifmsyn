@@ -24,7 +24,7 @@ const videoHeight = 200;
 
 function setup() {
   // Show webcam feed inside canvas
-  let canvas = createCanvas(videoWidth, videoHeight);
+  const canvas = createCanvas(videoWidth, videoHeight);
   canvas.parent("canvasContainer");
   video = createCapture(VIDEO);
   video.size(videoWidth, videoHeight);
@@ -35,7 +35,7 @@ function setup() {
     console.log("Posenet model loaded.");
   });
 
-  poseNet.on("pose", poses => {
+  poseNet.on("pose", (poses) => {
     if (poses.length > 0) {
       let nX = poses[0].pose.keypoints[0].position.x;
       let nY = poses[0].pose.keypoints[0].position.y;
@@ -124,7 +124,7 @@ function startPitch() {
 
 function getPitch() {
   if (isListening) {
-    pitch.getPitch((err, frequency) => {
+    pitch.getPitch((_err, frequency) => {
       if (frequency && oscillator) {
         select("#result").html(Math.floor(frequency));
         changeOscillatorFrequency(frequency);
@@ -184,9 +184,7 @@ function getOscillatorsData() {
   // Re-use parameters rather than start from default every time a user presses
   // stop and play
   const oscillatorWave = select("#oscillatorWave").value();
-  const modulatorWave = select("#modulatorWave")
-    .html()
-    .toLowerCase();
+  const modulatorWave = select("#modulatorWave").html().toLowerCase();
   const amplitudeModulatorWave = select("#amplitudeModulatorWave").value();
   const modulatorFrequency = select("#modulatorFrequency").html();
   const result = select("#result").html();
@@ -202,7 +200,7 @@ function getOscillatorsData() {
     result: result,
     attackTime: attackTime,
     releaseTime: releaseTime,
-    noteLength: noteLength
+    noteLength: noteLength,
   };
 }
 
@@ -218,7 +216,7 @@ function getFilterValues() {
     filterQ: filterQ,
     filterGain: filterGain,
     filterDetune: filterDetune,
-    filterType: filterType
+    filterType: filterType,
   };
 }
 
@@ -281,7 +279,7 @@ document.getElementById("playEnvelope").addEventListener("click", () => {
   modulator.stop(audioCtx.currentTime + noteLength + releaseTime);
 });
 
-document.getElementById("oscillatorWave").addEventListener("change", e => {
+document.getElementById("oscillatorWave").addEventListener("change", (e) => {
   if (oscillator) {
     oscillator.type = e.target.value;
   }
@@ -289,7 +287,7 @@ document.getElementById("oscillatorWave").addEventListener("change", e => {
 
 document
   .getElementById("amplitudeModulatorWave")
-  .addEventListener("change", e => {
+  .addEventListener("change", (e) => {
     if (amplitudeModulatorWave) {
       amplitudeModulatorWave.type = e.target.value;
     }
@@ -382,39 +380,39 @@ document.getElementById("stop").addEventListener("click", () => {
   }
 });
 
-document.getElementById("attack").addEventListener("input", e => {
+document.getElementById("attack").addEventListener("input", (e) => {
   attackTime = Number(e.target.value);
 });
 
-document.getElementById("release").addEventListener("input", e => {
+document.getElementById("release").addEventListener("input", (e) => {
   releaseTime = Number(e.target.value);
 });
 
-document.getElementById("noteLength").addEventListener("input", e => {
+document.getElementById("noteLength").addEventListener("input", (e) => {
   noteLength = Number(e.target.value);
 });
 
-document.getElementById("filterQ").addEventListener("change", e => {
+document.getElementById("filterQ").addEventListener("change", (e) => {
   biquadFilter.Q = Number(e.target.value);
 });
 
-document.getElementById("filterFrequency").addEventListener("change", e => {
+document.getElementById("filterFrequency").addEventListener("change", (e) => {
   biquadFilter.frequency = Number(e.target.value);
 });
 
-document.getElementById("filterDetune").addEventListener("change", e => {
+document.getElementById("filterDetune").addEventListener("change", (e) => {
   biquadFilter.filterDetune = Number(e.target.value);
 });
 
-document.getElementById("filterGain").addEventListener("change", e => {
+document.getElementById("filterGain").addEventListener("change", (e) => {
   biquadFilter.gain = Number(e.target.value);
 });
 
-document.getElementById("filterType").addEventListener("change", e => {
+document.getElementById("filterType").addEventListener("change", (e) => {
   biquadFilter.type = e.target.value;
 });
 
-document.getElementById("filterOn").addEventListener("change", e => {
+document.getElementById("filterOn").addEventListener("change", (e) => {
   switch ($("#soundCheck").html()) {
     case "ON":
       $("#playSimple").click();
