@@ -13,7 +13,7 @@ let analyser, bufferLength, dataArray, canvas, canvasCtx;
 let attackTime, releaseTime, noteLength;
 // Used by pitchDetection model
 let mic, pitch;
-let isListening = false;
+let isListening = true;
 // Used by poseNet model
 let video, poseNet;
 let noseX = 0;
@@ -50,16 +50,13 @@ function setup() {
   mic = new p5.AudioIn();
   mic.start(startPitch);
 
-  $("#listen").on("mousedown", () => {
-    isListening = true;
-    getPitch();
-    if ($("#soundCheck").html() !== "OFF")
-      select("#soundCheck").html("Listening");
-  });
-
-  $("#listen").on("mouseup", () => {
-    isListening = false;
-    if ($("#soundCheck").html() !== "OFF") select("#soundCheck").html("ON");
+  $("#trackChecbox").on("change", (e) => {
+    if (e.target.checked) {
+      isListening = true;
+      getPitch();
+    } else {
+      isListening = false;
+    }
   });
   setupAnalyser();
   createFilter();
@@ -124,15 +121,15 @@ function startPitch() {
 
 function getPitch() {
   if (isListening) {
+    changeModulatorFrequency(noseX);
+    changeWaveType(noseY);
+    // Normalise to values up to 30
+    changeAmplitudeModulatorFrequency((noseX / width) * 30);
+    changeOscillatorGain(noseY);
     pitch.getPitch((_err, frequency) => {
       if (frequency && oscillator) {
         select("#result").html(Math.floor(frequency));
         changeOscillatorFrequency(frequency);
-        changeModulatorFrequency(noseX);
-        changeWaveType(noseY);
-        // Normalise to values up to 30
-        changeAmplitudeModulatorFrequency((noseX / videoWidth) * 30);
-        changeOscillatorGain(noseY);
       }
       // Recursively get pitch
       getPitch();

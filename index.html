@@ -66,11 +66,19 @@
               Play (FM & Envelope)
             </button>
             <button type="button" class="btn btn-danger mb-2" id="stop">
-              Stop
+              Mute
             </button>
-            <button type="button" class="btn btn-success mb-2" id="listen">
-              Listen (Hold Down)
-            </button>
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input mt-2"
+                type="checkbox"
+                id="trackChecbox"
+                checked="true"
+              />
+              <label class="form-check-label" for="trackChecbox"
+                >Listen to pitch and track nose</label
+              >
+            </div>
           </div>
         </div>
         <div class="col-lg-9">
