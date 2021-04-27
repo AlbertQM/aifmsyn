@@ -79,6 +79,11 @@ function setupAnalyser() {
 }
 
 function drawWave() {
+  const isCanvasVisible = $("#analyserCanvas").is(":visible");
+  if (!isCanvasVisible) {
+    return;
+  }
+
   requestAnimationFrame(drawWave);
   analyser.getByteTimeDomainData(dataArray);
   // Background

@@ -54,7 +54,12 @@
       <div class="row">
         <div class="col-lg-9 text-center">
           <div id="canvasContainer" class="my-2"></div>
-          <canvas id="analyserCanvas" height="200" width="800"></canvas>
+          <canvas
+            id="analyserCanvas"
+            class="d-none d-md-block"
+            height="200"
+            width="690"
+          ></canvas>
           <div class="my-2" name="controls">
             <button type="button" class="btn btn-primary mb-2" id="playComplex">
               Play (FM & AM)
@@ -177,7 +182,7 @@
           </table>
 
           <p class="h5">Biquad Filter</p>
-          <table class="table table-striped  table-dark table-sm">
+          <table class="table table-striped table-dark table-sm">
             <tr>
               <th scope="row">Enable Biquad Filter</th>
               <td>
@@ -328,7 +333,7 @@
         }
       });
 
-      $("#filterQ").on("change", e => {
+      $("#filterQ").on("change", (e) => {
         let value = e.target.value;
         if (value > 0 && value <= 1000) {
           e.target.value = value;
@@ -337,7 +342,7 @@
         }
       });
 
-      $("#filterFrequency").on("change", e => {
+      $("#filterFrequency").on("change", (e) => {
         let value = e.target.value;
         if (value > 0 && value <= 20000) {
           e.target.value = value;
@@ -346,7 +351,7 @@
         }
       });
 
-      $("#filterGain").on("change", e => {
+      $("#filterGain").on("change", (e) => {
         let value = e.target.value;
         if (value > 0 && value <= 100) {
           e.target.value = value;
@@ -355,7 +360,7 @@
         }
       });
 
-      $("#filterDetune").on("change", e => {
+      $("#filterDetune").on("change", (e) => {
         let value = e.target.value;
         if (value >= 0 && value <= 100) {
           e.target.value = value;
